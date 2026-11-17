@@ -21,6 +21,7 @@ var (
 	PATH = "../secrets/.env"
 	JWTSECRET = "JWT_SIGNING_SECRET"
 )
+
 func main() {
 
 	
@@ -47,6 +48,12 @@ func main() {
 
 	r.Route("/oauth2", func(r chi.Router) {
 		r.Post("/token", oauthHandler.IssueToken)
+	})
+
+	r.Use(middleware.LeakyBucketMiddleware(10))
+
+	r.Post("/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Token generated successfully"))
 	})
 
 	srv := &http.Server{
